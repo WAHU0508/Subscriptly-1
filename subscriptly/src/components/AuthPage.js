@@ -18,7 +18,7 @@ const AuthPage = ({ setUser }) => {
       if (isSignup) {
         // Signup Logic
         const newUser = { name, email, password };
-        const response = await axios.post('http://127.0.0.1:5000/sign_up', newUser);
+        const response = await axios.post('https://test-backend-e4ae.onrender.com/sign_up', newUser);
 
         if (response.status === 201) {
           alert('Signup successful!');
@@ -35,7 +35,7 @@ const AuthPage = ({ setUser }) => {
       } else {
         // Signin Logic
         const credentials = { name, password };
-        const response = await axios.post('http://127.0.0.1:5000/login', credentials);
+        const response = await axios.post('https://test-backend-e4ae.onrender.com/login', credentials);
 
         if (response.status === 200) {
           alert('Signin successful!');
