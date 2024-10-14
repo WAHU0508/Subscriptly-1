@@ -1,7 +1,7 @@
 import React, { useState } from 'react';
 import { useNavigate } from 'react-router-dom';
+import axios from 'axios';
 import './AuthPage.css';
-
 
 const AuthPage = ({ setUser }) => {
   const [isSignup, setIsSignup] = useState(false);
@@ -14,43 +14,66 @@ const AuthPage = ({ setUser }) => {
   const handleSubmit = async (e) => {
     e.preventDefault();
 
-    if (isSignup) {
-      // Signup Logic
-      const newUser = { name, email, password, subscriptions: [] };
-      const response = await fetch('https://subscriptly-server.onrender.com/users', {
-        method: 'POST',
-        headers: {
-          'Content-Type': 'application/json',
-        },
-        body: JSON.stringify(newUser),
-      });
+    try {
+      if (isSignup) {
+        // Signup Logic
+        const newUser = { name, email, password };
+        const response = await axios.post('http://127.0.0.1:5000/sign_up', newUser);
 
-      if (response.ok) {
-        alert('Signup successful!');
-        localStorage.setItem('user', JSON.stringify(newUser));
-        setUser(newUser.name)
-        navigate('/home')
-      }
-    } else {
-      // Signin Logic
-      const response = await fetch(`https://subscriptly-server.onrender.com/users?name=${name}`);
-      const users = await response.json();
-
-      if (users.length > 0 && users[0].password === password) {
-        alert('Signin successful!');
-        localStorage.setItem('user', JSON.stringify(users[0]));
-        setUser(users[0].name)
-        navigate('/home');
+        if (response.status === 201) {
+          alert('Signup successful!');
+          const userData = response.data.user;
+          
+          if (userData && userData.name) {
+            localStorage.setItem('user', JSON.stringify(userData));
+            setUser(userData.name);
+            navigate('/home');
+          } else {
+            alert('Error: Invalid signup response from server.');
+          }
+        }
       } else {
-        // Display alert message for wrong credentials
-        alert('Wrong name or password. Please try again.');
+        // Signin Logic
+        const credentials = { name, password };
+        const response = await axios.post('http://127.0.0.1:5000/login', credentials);
+
+        if (response.status === 200) {
+          alert('Signin successful!');
+          const userData = response.data;
+          
+          if (userData && userData.name) {
+            localStorage.setItem('user', JSON.stringify(userData));
+            setUser(userData.name);
+            navigate('/home');
+          } else {
+            alert('Error: Invalid signin response from server.');
+          }
+        }
+      }
+
+      // Clear form
+      setName('');
+      setEmail('');
+      setPassword('');
+    } catch (error) {
+      // Handle errors and display appropriate messages
+      if (error.response) {
+        // Server responded with a status other than 200 range
+        if (error.response.status === 401) {
+          alert('Wrong name or password. Please try again.');
+        } else if (error.response.status === 409) {
+          alert('User already exists. Please try signing in.');
+        } else {
+          alert('An error occurred: ' + (error.response.data.message || 'Unexpected error.'));
+        }
+      } else if (error.request) {
+        // Request was made but no response was received
+        alert('Unable to connect to the server. Please check your network.');
+      } else {
+        // Something happened in setting up the request that triggered an Error
+        alert('Error: ' + error.message);
       }
     }
-
-    // Clear form
-    setName('');
-    setEmail('');
-    setPassword('');
   };
 
   return (
@@ -58,7 +81,6 @@ const AuthPage = ({ setUser }) => {
       <h2 id="loginHeader">{isSignup ? 'Subscriptly' : 'Welcome'}</h2>
       <form onSubmit={handleSubmit}>
         <div>
-          {/* <label className='input1'>Name:</label> */}
           <input
             type="text"
             placeholder='name'
@@ -69,7 +91,6 @@ const AuthPage = ({ setUser }) => {
         </div>
         {isSignup && (
           <div>
-            {/* <label className='input2'>Email:</label> */}
             <input
               type="email"
               placeholder='email'
@@ -80,7 +101,6 @@ const AuthPage = ({ setUser }) => {
           </div>
         )}
         <div>
-          {/* <label className='input3'>Password:</label> */}
           <input
             type="password"
             placeholder='password'
