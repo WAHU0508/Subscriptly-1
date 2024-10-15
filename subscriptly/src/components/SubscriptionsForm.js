@@ -21,40 +21,35 @@ const handleChange = (e) => {
 //After submiting, persist to server.
 const handleSubmit = (e) => {
     e.preventDefault();
-
-    fetch(`https://subscriptly-server.onrender.com/users?name=${user}`)
-        .then(res => res.json())
-        .then(users => {
-            if (users.length > 0) {
-                const userData = users[0];
-                const updatedSubscriptions = [...userData.subscriptions, formData];
-
-                const updatedUser = {
-                    ...userData,
-                    subscriptions: updatedSubscriptions,
-                };
-
-                return fetch(`https://subscriptly-server.onrender.com/users/${userData.id}`, {
-                    method: 'PUT',
-                    headers: {
-                        'Content-Type': 'application/json',
-                    },
-                    body: JSON.stringify(updatedUser),
-                });
-            } else {
-                throw new Error('User not found');
+    
+    const subscriptionData = {
+        name: formData.name,
+        category: formData.category,
+        cost: parseFloat(formData.cost),
+        billing_cycle: formData.billing_cycle,
+        date_of_payment: formData.date_of_payment,
+        user_id: user,
+    };
+    fetch(`https://test-backend-e4ae.onrender.com/users/${user}/subscriptions`, {
+        method: 'POST',
+        headers: {'Content-Type': 'application/json',},
+        body: JSON.stringify(subscriptionData),
+    })
+        .then(res => {
+            if (!res.ok) {
+                throw new Error('Failed to add subscription')
             }
+            return res.json();
         })
-        .then(res => res.json())
-        .then(updatedUser => {
-            onAddSubscription(formData); // Call the callback with the new subscription
+        .then((addedSubscription) => {
+            onAddSubscription(addedSubscription)
             setFormData({
                 name: '',
                 category: '',
                 cost: '',
                 billing_cycle: 'monthly',
                 date_of_payment: ''
-            });
+            })
         })
         .catch(error => console.error('Error adding subscription:', error));
 };
