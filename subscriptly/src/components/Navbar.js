@@ -1,11 +1,13 @@
 import React, { useState, useEffect } from 'react';
 import { useNavigate } from 'react-router-dom'; // Import useNavigate
+import { ToastContainer, toast } from 'react-toastify'; // Import ToastContainer and toast
 import '../App.css';
 import './Navbar.css';
 import { NavbarData } from './NavbarData';
 import MenuIcon from '@mui/icons-material/Menu';
-import PersonIcon from '@mui/icons-material/Person';
 import LogoutIcon from '@mui/icons-material/Logout';
+import WavingHandIcon from '@mui/icons-material/WavingHand';
+import 'react-toastify/dist/ReactToastify.css'; // Import CSS for toast notifications
 
 const Navbar = ({ user, onLogout }) => {
     const [isExpanded, setIsExpanded] = useState(true);
@@ -30,13 +32,21 @@ const Navbar = ({ user, onLogout }) => {
         navigate('/landing'); // Redirect to the LandingPage
     };
 
+    const handleMenuItemClick = (link) => {
+        if (!user) {
+            // Show toast notification if the user is not logged in
+            toast.info("Please login or sign up to access this page.");
+        } else {
+            navigate(link); // Navigate to the respective page if logged in
+        }
+    };
+
     const menuItems = [
         {
             id: 'greeting',
-            icon: <PersonIcon />,
-            title: user ? `Welcome, ${user}` : 'Login',
-            link: user ? null : '/login',
-            onClick: user ? null : () => { window.location.pathname = '/login' },
+            icon: <WavingHandIcon />,
+            title: user ? `Welcome, ${user.name}` : 'Login',
+            onClick: user ? null : () => navigate('/login'), // No action when logged in
         },
         ...NavbarData,
         user && {
@@ -56,9 +66,10 @@ const Navbar = ({ user, onLogout }) => {
                 {menuItems.map((item, key) => (
                     <li
                         className={`row ${item.id === 'logout' ? 'logout-row' : ''}`}
-                        id={window.location.pathname === item.link ? "active" : ""}
                         key={key}
-                        onClick={item.onClick || (() => { if (item.link) window.location.pathname = item.link })}
+                        onClick={item.onClick || (() => { 
+                            if (item.link) handleMenuItemClick(item.link); 
+                        })}
                     >
                         <div id="icon">
                             {item.icon}
@@ -71,6 +82,7 @@ const Navbar = ({ user, onLogout }) => {
                     </li>
                 ))}
             </ul>
+            <ToastContainer /> {/* Add ToastContainer here */}
         </div>
     );
 };
