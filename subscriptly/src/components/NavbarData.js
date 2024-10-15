@@ -1,7 +1,8 @@
-import React from 'react'
+import React from 'react';
 import HomeIcon from '@mui/icons-material/Home';
 import SubscriptionsIcon from '@mui/icons-material/Subscriptions';
 import NotificationsIcon from '@mui/icons-material/Notifications';
+import AccountBoxIcon from '@mui/icons-material/AccountBox';
 
 export const NavbarData = [
     {
@@ -18,5 +19,10 @@ export const NavbarData = [
         title: "Notifications",
         icon: <NotificationsIcon />,
         link: "/notifications"
+    },
+    {
+        title: "Your Profile",
+        icon: <AccountBoxIcon />,
+        link: "/profile"
     }
-]
+];

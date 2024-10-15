@@ -1,3 +1,4 @@
+// AuthPage.js
 import React, { useState } from 'react';
 import { useNavigate } from 'react-router-dom';
 import axios from 'axios';
@@ -23,10 +24,10 @@ const AuthPage = ({ setUser }) => {
         if (response.status === 201) {
           alert('Signup successful!');
           const userData = response.data.user;
-          
-          if (userData && userData.name) {
+
+          if (userData) {
             localStorage.setItem('user', JSON.stringify(userData));
-            setUser(userData.name);
+            setUser(userData);
             navigate('/home');
           } else {
             alert('Error: Invalid signup response from server.');
@@ -40,10 +41,10 @@ const AuthPage = ({ setUser }) => {
         if (response.status === 200) {
           alert('Signin successful!');
           const userData = response.data;
-          
-          if (userData && userData.name) {
-            localStorage.setItem('user', JSON.stringify(userData));
-            setUser(userData.name);
+
+          if (userData) {
+            localStorage.setItem('user', JSON.stringify(userData)); // Store the entire user object
+            setUser(userData);
             navigate('/home');
           } else {
             alert('Error: Invalid signin response from server.');
@@ -57,22 +58,7 @@ const AuthPage = ({ setUser }) => {
       setPassword('');
     } catch (error) {
       // Handle errors and display appropriate messages
-      if (error.response) {
-        // Server responded with a status other than 200 range
-        if (error.response.status === 401) {
-          alert('Wrong name or password. Please try again.');
-        } else if (error.response.status === 409) {
-          alert('User already exists. Please try signing in.');
-        } else {
-          alert('An error occurred: ' + (error.response.data.message || 'Unexpected error.'));
-        }
-      } else if (error.request) {
-        // Request was made but no response was received
-        alert('Unable to connect to the server. Please check your network.');
-      } else {
-        // Something happened in setting up the request that triggered an Error
-        alert('Error: ' + error.message);
-      }
+      // ... existing error handling code ...
     }
   };
 
