@@ -32,7 +32,7 @@ function SubscriptionsForm({ userId, onAddSubscription }) {
     }
 
     // Send new subscription data to the API
-    axios.post(`http://127.0.0.1:5000/user/${userId}/subscriptions`, formData)
+    axios.post(`https://test-backend-e4ae.onrender.com/user/${userId}/subscriptions`, formData)
       .then((response) => {
         onAddSubscription(response.data); // Update parent component with the new subscription
         setFormData({
