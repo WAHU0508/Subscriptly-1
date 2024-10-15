@@ -20,18 +20,14 @@ const SubscriptionsPage = ({ user }) => {
   useEffect(() => {
     const fetchSubscriptions = () => {
       if (user) {
-        fetch(`https://subscriptly-server.onrender.com/users?name=${user}`)
+        fetch(`https://test-backend-e4ae.onrender.com/users/${user}/subscriptions`)
           .then(res => {
             if (!res.ok) {
               throw new Error('Network Response Was Not Ok');
             }
             return res.json();
           })
-          .then(users => {
-            if (users.length > 0) {
-              setSubscriptions(users[0].subscriptions);
-            }
-          })
+          .then(data => setSubscriptions(data.subscriptions))
           .catch(error => console.error('Error fetching subscriptions:', error));
       }
     };
@@ -41,32 +37,12 @@ const SubscriptionsPage = ({ user }) => {
   //Delete the current user's subscription by clicking cancel button and persist changes to server
   const handleDelete = (id) => {
     if (window.confirm("Are you sure you want to cancel this subscription?")) {
-      fetch(`https://subscriptly-server.onrender.com/users?name=${user}`)
-        .then(res => res.json())
-        .then(users => {
-          if (users.length > 0) {
-            const userData = users[0];
-            const updatedSubscriptions = userData.subscriptions.filter(subscription => subscription.id !== id);
-
-            const updatedUserData = {
-              ...userData,
-              subscriptions: updatedSubscriptions
-            };
-            fetch(`https://subscriptly-server.onrender.com/users/${userData.id}`, {
-              method: 'PUT',
-              headers: {
-                'Content-Type': 'application/json'
-              },
-              body: JSON.stringify(updatedUserData)
-            })
-              .then(res => {
-                if (!res.ok) {
-                  throw new Error('Failed to delete subscription');
-                }
-                setSubscriptions(updatedSubscriptions);
-              })
-              .catch(error => console.error('Error updating subscriptions:', error));
-          }
+      fetch(`https://test-backend-e4ae.onrender.com/subscriptions/${id}`, {
+        method: 'DELETE',
+      })
+        .then(res => {
+          if (!res.ok) throw new Error('Failed to delete subscription');
+            setSubscriptions(prev => prev.filter(subscription => subscription.id !== id));
         })
         .catch(error => console.error('Error fetching user data:', error));
     }
@@ -83,40 +59,19 @@ const SubscriptionsPage = ({ user }) => {
 
   //Function to add a new subscription and give a random id.Added subscription is persisted to server
   const handleAddSubscription = (newSubscription) => {
-    const generateId = (subscriptions) => {
-      let maxId = subscriptions.reduce((max, sub) => Math.max(max, parseInt(sub.id)), 0);
-      return (maxId + 1).toString();
-    };
-
-    const id = generateId(subscriptions);
-    const newSubWithId = { ...newSubscription, id };
-    const updatedSubscriptions = [...subscriptions, newSubWithId];
-
-    fetch(`https://subscriptly-server.onrender.com/users?name=${user}`)
-      .then(res => res.json())
-      .then(users => {
-        if (users.length > 0) {
-          const userData = users[0];
-          const updatedUserData = {
-            ...userData,
-            subscriptions: updatedSubscriptions
-          };
-          return fetch(`https://subscriptly-server.onrender.com/users/${userData.id}`, {
-            method: 'PUT',
-            headers: {
-              'Content-Type': 'application/json'
-            },
-            body: JSON.stringify(updatedUserData)
-          });
-        }
-      })
-      .then(res => {
-        if (!res.ok) {
-          throw new Error('Failed to add subscription');
-        }
-        setSubscriptions(updatedSubscriptions);
-      })
-      .catch(error => console.error('Error updating subscriptions:', error));
+    fetch(`https://test-backend-e4ae.onrender.com/users/${user}/subscriptions`, {
+      method: 'POST',
+      headers: {'Content-Type': 'application/json'},
+      body: JSON.stringify(newSubscription),
+    })
+    .then(res => {
+      if (!res.ok) throw new Error('Failed to add  subscription');
+      return res.json()
+    })
+    .then(addedSubscription => {
+      setSubscriptions([...subscriptions, addedSubscription]);
+    })
+      .catch(error => console.error('Error adding subscription:', error));
   };
 
   //Function to determine selected category for filtering
