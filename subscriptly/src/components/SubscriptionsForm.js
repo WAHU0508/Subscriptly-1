@@ -30,21 +30,21 @@ function SubscriptionsForm({ userId, onAddSubscription }) {
       console.error("User ID is undefined");
       return;
     }
-
-    // Send new subscription data to the API
-    axios.post(`https://test-backend-e4ae.onrender.com/user/${userId}/subscriptions`, formData)
-      .then((response) => {
-        onAddSubscription(response.data); // Update parent component with the new subscription
-        setFormData({
-          name: '',
-          category: '',
-          cost: '',
-          billing_cycle: 'monthly',
-          date_of_payment: ''
-        });
-      })
-      .catch((error) => console.error('Error adding subscription:', error));
-  };
+    onAddSubscription(formData)
+    //Send new subscription data to the API
+    // axios.post(`https://test-backend-e4ae.onrender.com/user/${userId}/subscriptions`, formData)
+    //   .then((response) => {
+    //     onAddSubscription(response.data); // Update parent component with the new subscription
+    //     setFormData({
+    //       name: '',
+    //       category: '',
+    //       cost: '',
+    //       billing_cycle: 'monthly',
+    //       date_of_payment: ''
+    //     });
+    //   })
+    //   .catch((error) => console.error('Error adding subscription:', error));
+   };
 
   return (
     <form className="myForm" onSubmit={handleSubmit}>

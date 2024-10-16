@@ -15,24 +15,34 @@ const SubscriptionsPage = ({ user }) => {
   const [selectedCategory, setSelectedCategory] = useState('');
   const [startDate, setStartDate] = useState('');
   const [endDate, setEndDate] = useState('');
-  
+  const [currentId, setCurrentId] = useState(null);
+
   //Fetch the current user's subscriptions
+  console.log(JSON.stringify(user))
+  // const userid = user['id']
+  // console.log(userid)
+  useEffect(() => {
+    if (user) {
+      setCurrentId(parseInt(JSON.stringify(user.id), 10))
+    }
+  }, [user])
+
   useEffect(() => {
     const fetchSubscriptions = () => {
-      if (user) {
-        fetch(`https://test-backend-e4ae.onrender.com/users/${user}/subscriptions`)
+      if (currentId) {
+        fetch(`https://test-backend-e4ae.onrender.com/user/${currentId}/subscriptions`)
           .then(res => {
             if (!res.ok) {
               throw new Error('Network Response Was Not Ok');
             }
             return res.json();
           })
-          .then(data => setSubscriptions(data.subscriptions))
+          .then(data => setSubscriptions(data))
           .catch(error => console.error('Error fetching subscriptions:', error));
       }
     };
     fetchSubscriptions();
-  }, [user]);
+  }, [currentId]);
 
   //Delete the current user's subscription by clicking cancel button and persist changes to server
   const handleDelete = (id) => {
@@ -49,7 +59,7 @@ const SubscriptionsPage = ({ user }) => {
   };
 
   //Filter the subscriptions by name search, category and date range.
-  const filteredSubscriptions = subscriptions.filter(subscription => {
+  const filteredSubscriptions = (subscriptions || []).filter(subscription => {
     const matchSearch = subscription.name.toLowerCase().includes(searchTerm.toLowerCase());
     const matchCategory = selectedCategory === '' || subscription.category.toLowerCase() === selectedCategory.toLowerCase();
     const matchDateRange = (!startDate || new Date(subscription.date_of_payment) >= new Date(startDate)) &&
@@ -59,7 +69,7 @@ const SubscriptionsPage = ({ user }) => {
 
   //Function to add a new subscription and give a random id.Added subscription is persisted to server
   const handleAddSubscription = (newSubscription) => {
-    fetch(`https://test-backend-e4ae.onrender.com/users/${user}/subscriptions`, {
+    fetch(`https://test-backend-e4ae.onrender.com/user/${currentId}/subscriptions`, {
       method: 'POST',
       headers: {'Content-Type': 'application/json'},
       body: JSON.stringify(newSubscription),
@@ -69,7 +79,7 @@ const SubscriptionsPage = ({ user }) => {
       return res.json()
     })
     .then(addedSubscription => {
-      setSubscriptions([...subscriptions, addedSubscription]);
+      setSubscriptions(prevSubs => [...prevSubs, addedSubscription]);
     })
       .catch(error => console.error('Error adding subscription:', error));
   };
@@ -101,7 +111,7 @@ const SubscriptionsPage = ({ user }) => {
     <div className="myHomePage">
       <div className="topSection">
         <div className="leftColumn">
-          <SubscriptionsForm user={user} onAddSubscription={handleAddSubscription} />
+          <SubscriptionsForm userId={currentId} onAddSubscription={handleAddSubscription} />
         </div>
         <div className="rightColumn">
           <div className="rightColumnContainer">
