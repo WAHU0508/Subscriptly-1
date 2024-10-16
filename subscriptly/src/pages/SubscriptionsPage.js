@@ -23,7 +23,7 @@ const SubscriptionsPage = ({ user }) => {
   // console.log(userid)
   useEffect(() => {
     if (user) {
-      setCurrentId(parseInt(JSON.stringify(user.id), 10))
+      setCurrentId(parseInt(JSON.stringify(user.id)), 10)
     }
   }, [user])
 
@@ -45,18 +45,23 @@ const SubscriptionsPage = ({ user }) => {
   }, [currentId]);
 
   //Delete the current user's subscription by clicking cancel button and persist changes to server
-  const handleDelete = (id) => {
-    if (window.confirm("Are you sure you want to cancel this subscription?")) {
-      fetch(`https://test-backend-e4ae.onrender.com/subscriptions/${id}`, {
-        method: 'DELETE',
-      })
-        .then(res => {
-          if (!res.ok) throw new Error('Failed to delete subscription');
-            setSubscriptions(prev => prev.filter(subscription => subscription.id !== id));
+const handleDelete = (id) => {
+  if (window.confirm("Are you sure you want to cancel this subscription?")) {
+    fetch(`https://test-backend-e4ae.onrender.com/user/${currentId}/subscriptions/${id}`, {
+      method: 'DELETE',
+    })
+      .then(res => {
+        if (!res.ok) {
+          throw new Error('Failed to delete subscription');
+          }
+          return res.json()
         })
-        .catch(error => console.error('Error fetching user data:', error));
-    }
-  };
+        .then(() => {
+          setSubscriptions(prev => prev.filter(subscription => subscription.id !== id));
+        })
+      .catch(error => console.error('Error fetching user data:', error));
+  }
+};
 
   //Filter the subscriptions by name search, category and date range.
   const filteredSubscriptions = (subscriptions || []).filter(subscription => {
