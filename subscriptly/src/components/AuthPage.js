@@ -23,15 +23,10 @@ const AuthPage = ({ setUser }) => {
 
         if (response.status === 201) {
           alert('Signup successful!');
-          const userData = response.data.user;
-
-          if (userData) {
-            localStorage.setItem('user', JSON.stringify(userData));
-            setUser(userData);
-            navigate('/home');
-          } else {
-            alert('Error: Invalid signup response from server.');
-          }
+          // Switch to sign-in form instead of navigating directly to home
+          setIsSignup(false);
+        } else {
+          alert('Error: Invalid signup response from server.');
         }
       } else {
         // Signin Logic
@@ -49,16 +44,15 @@ const AuthPage = ({ setUser }) => {
           } else {
             alert('Error: Invalid signin response from server.');
           }
+        } else {
+          alert('Error: Invalid signin response from server.');
         }
       }
-
-      // Clear form
-      setName('');
-      setEmail('');
-      setPassword('');
+      
     } catch (error) {
       // Handle errors and display appropriate messages
-      // ... existing error handling code ...
+      console.error('Error during authentication:', error);
+      alert('An error occurred. Please try again.');
     }
   };
 
