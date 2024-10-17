@@ -1,5 +1,6 @@
 import React, { useState, useEffect } from "react";
 import axios from "axios";
+import "./userprofile.css";
 
 function UserProfile({ userId, setUser }) {
   const [userData, setUserData] = useState(null); // Holds user data from the backend
@@ -67,61 +68,62 @@ function UserProfile({ userId, setUser }) {
 
   // Basic display of user data
   return (
+<div className="user-profile">
+  <h2>User Profile</h2>
+  {successMessage && <p style={{ color: 'green' }}>{successMessage}</p>}
+  {userData ? (
     <div>
-      <h2>User Profile</h2>
-      {successMessage && <p style={{ color: 'green' }}>{successMessage}</p>}
-      {userData ? (
+      <form onSubmit={handleSubmit}>
         <div>
-          <form onSubmit={handleSubmit}>
-            <div>
-              <label>Name:</label>
-              <input
-                type="text"
-                name="name"
-                value={formData.name}
-                onChange={handleChange}
-                required
-              />
-            </div>
-            <div>
-              <label>Email:</label>
-              <input
-                type="email"
-                name="email"
-                value={formData.email}
-                onChange={handleChange}
-                required
-              />
-            </div>
-            <div>
-              <label>Password (leave blank to keep current password):</label>
-              <input
-                type="password"
-                name="password"
-                placeholder="New password"
-                value={formData.password}
-                onChange={handleChange}
-              />
-            </div>
-            <button type="submit">Update Profile</button>
-          </form>
-          <h3>Subscriptions</h3>
-          {userData.subscriptions && userData.subscriptions.length > 0 ? (
-            <ul>
-              {userData.subscriptions.map((sub) => (
-                <li key={sub.id}>
-                  {sub.name} - {sub.category} - ${sub.cost} ({sub.billing_cycle})
-                </li>
-              ))}
-            </ul>
-          ) : (
-            <p>No subscriptions found.</p>
-          )}
+          <label>Name:</label>
+          <input
+            type="text"
+            name="name"
+            value={formData.name}
+            onChange={handleChange}
+            required
+          />
         </div>
+        <div>
+          <label>Email:</label>
+          <input
+            type="email"
+            name="email"
+            value={formData.email}
+            onChange={handleChange}
+            required
+          />
+        </div>
+        <div>
+          <label>Password (leave blank to keep current password):</label>
+          <input
+            type="password"
+            name="password"
+            placeholder="New password"
+            value={formData.password}
+            onChange={handleChange}
+          />
+        </div>
+        <button type="submit">Update Profile</button>
+      </form>
+      <h3>Subscriptions</h3>
+      {userData.subscriptions && userData.subscriptions.length > 0 ? (
+        <ul>
+          {userData.subscriptions.map((sub) => (
+            <li key={sub.id}>
+              {sub.name} - {sub.category} - ${sub.cost} ({sub.billing_cycle})
+            </li>
+          ))}
+        </ul>
       ) : (
-        <p>No user data available.</p>
+        <p>No subscriptions found.</p>
       )}
     </div>
+  ) : (
+    <p>No user data available.</p>
+  )}
+</div>
+
   );
 }
 
