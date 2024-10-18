@@ -6,28 +6,37 @@ import './NotificationPage.css';
 
 const NotificationsPage = ({user}) => {
     const [notifications, setNotifications] = useState([])
+    const [currentId, setCurrentId] = useState(null)
 
-    //Fetch user data and individual's user subscriptions
     useEffect(() => {
-        const fetchNotifications = () => {
-            if (user) {
-                fetch(`https://subscriptly-server.onrender.com/users?name=${user}`)
-                .then(res => res.json())
-                .then(users => {
-                    if(users.length > 0) {
-                        const userData = users[0]
-                        const expiringSubscriptions = userData.subscriptions.filter(subscription => {
+    if (user) {
+      setCurrentId(parseInt(JSON.stringify(user.id)), 10)
+    }
+  }, [user])
+
+  useEffect(() => {
+    const fetchSubscriptions = () => {
+      if (currentId) {
+        fetch(`https://test-backend-e4ae.onrender.com/user/${currentId}/subscriptions`)
+          .then(res => {
+            if (!res.ok) {
+              throw new Error('Network Response Was Not Ok');
+            }
+            return res.json();
+          })
+          .then(data => {
+              const expiringSubscriptions = data.filter(subscription => {
                             const daysLeft = calculateDaysLeft(subscription.date_of_payment, subscription.billing_cycle)
                             return daysLeft <= 7
                         })
                         setNotifications(expiringSubscriptions)
-                    }
-                })
-                .catch(error => console.error('Error fetching subscriptions:', error))
-            }
-        }
-        fetchNotifications()
-    }, [user])
+          }
+          .catch(error => console.error('Error fetching subscriptions:', error));
+      }
+    };
+    fetchSubscriptions();
+  }, [currentId]);
+    
     //Calculate days left for a subscription to expire (less than 7 days) and display them in the notifications page.
     function calculateDaysLeft(dateOfPayment, billingCycle) {
         const paymentDate = new Date(dateOfPayment)
