@@ -5,7 +5,7 @@
 ---
 
 # Deployed Links
-1. [Frontend](https://subscriptly4u.netlify.app)
+1. [Frontend](https://subscriptly4.netlify.app)
 
 2. [Backend](https://subscriptly-server.onrender.com/users)
 
