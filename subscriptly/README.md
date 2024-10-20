@@ -4,10 +4,12 @@
 
 ---
 
-# Deployed Links
+# Frontend and Backend Links
 1. [Frontend](https://subscriptly4.netlify.app)
 
-2. [Backend](https://subscriptly-server.onrender.com/users)
+2. [Backend](https://test-backend-e4ae.onrender.com/user)
+
+3. [Backend Repo](https://github.com/WAHU0508/Subscriptly_Backend.git)
 
 ## **Introduction**
 
