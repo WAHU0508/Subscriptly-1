@@ -32,6 +32,7 @@ SubScriptly is a React-based subscription management application that allows use
 ## **Features**
 
 - **Signup/Sign In:** Secure authentication for managing subscriptions.
+- **Edit user profile:** Allow users to change username, password or email.
 - **Add Subscription:** Add new subscriptions with details like name, category, and payment date.
 - **Cancel Subscription:** Cancel and remove subscriptions easily.
 - **Edit Subscription:** Double click a cell to edit a subscription.
